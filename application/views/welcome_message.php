@@ -1,100 +1,167 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-?><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>Welcome to CodeIgniter</title>
-
-	<style type="text/css">
-
-	::selection { background-color: #E13300; color: white; }
-	::-moz-selection { background-color: #E13300; color: white; }
-
-	body {
-		background-color: #fff;
-		margin: 40px;
-		font: 13px/20px normal Helvetica, Arial, sans-serif;
-		color: #4F5155;
-	}
-
-	a {
-		color: #003399;
-		background-color: transparent;
-		font-weight: normal;
-		text-decoration: none;
-	}
-
-	a:hover {
-		color: #97310e;
-	}
-
-	h1 {
-		color: #444;
-		background-color: transparent;
-		border-bottom: 1px solid #D0D0D0;
-		font-size: 19px;
-		font-weight: normal;
-		margin: 0 0 14px 0;
-		padding: 14px 15px 10px 15px;
-	}
-
-	code {
-		font-family: Consolas, Monaco, Courier New, Courier, monospace;
-		font-size: 12px;
-		background-color: #f9f9f9;
-		border: 1px solid #D0D0D0;
-		color: #002166;
-		display: block;
-		margin: 14px 0 14px 0;
-		padding: 12px 10px 12px 10px;
-	}
-
-	#body {
-		margin: 0 15px 0 15px;
-		min-height: 96px;
-	}
-
-	p {
-		margin: 0 0 10px;
-		padding:0;
-	}
-
-	p.footer {
-		text-align: right;
-		font-size: 11px;
-		border-top: 1px solid #D0D0D0;
-		line-height: 32px;
-		padding: 0 10px 0 10px;
-		margin: 20px 0 0 0;
-	}
-
-	#container {
-		margin: 10px;
-		border: 1px solid #D0D0D0;
-		box-shadow: 0 0 8px #D0D0D0;
-	}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management API Documentation</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Product Management API Documentation</h1>
 
-<div id="container">
-	<h1>Welcome to CodeIgniter!</h1>
+        <!-- Add Product -->
+        <h2 class="mt-5">Add Product</h2>
+        <p>Add a new product to the system.</p>
+        <h5>Endpoint:</h5>
+        <p><code>POST /api/add-product</code></p>
+        <h5>Request Payload:</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>name</td>
+                    <td>string</td>
+                    <td>The name of the product.</td>
+                </tr>
+                <tr>
+                    <td>description</td>
+                    <td>string</td>
+                    <td>The description of the product.</td>
+                </tr>
+                <tr>
+                    <td>image</td>
+                    <td>string</td>
+                    <td>URL of the product image.</td>
+                </tr>
+                <tr>
+                    <td>category</td>
+                    <td>string</td>
+                    <td>The category of the product.</td>
+                </tr>
+                <!-- Add more fields as needed -->
+            </tbody>
+        </table>
+        <h5>Response:</h5>
+        <pre>
+{
+  "status": "success",
+  "message": "Product added successfully",
+  "data": {
+    "product_id": 123,
+    "name": "Product Name",
+    "description": "Product Description",
+    "image": "http://example.com/images/product.jpg",
+    "category": "Category Name"
+  }
+}
+        </pre>
 
-	<div id="body">
-		<p>The page you are looking at is being generated dynamically by CodeIgniter.</p>
+        <!-- List All Products -->
+        <h2 class="mt-5">List All Products</h2>
+        <p>Retrieve a list of all products in the system.</p>
+        <h5>Endpoint:</h5>
+        <p><code>GET /api/list-all-product</code></p>
+        <h5>Response:</h5>
+        <pre>
+{
+  "status": "success",
+  "data": [
+    {
+      "product_id": 123,
+      "name": "Product Name",
+      "description": "Product Description",
+      "image": "http://example.com/images/product.jpg",
+      "category": "Category Name"
+    },
+    {
+      "product_id": 456,
+      "name": "Another Product",
+      "description": "Another Product Description",
+      "image": "http://example.com/images/another-product.jpg",
+      "category": "Other Category"
+    },
+    ...
+  ]
+}
+        </pre>
 
-		<p>If you would like to edit this page you'll find it located at:</p>
-		<code>application/views/welcome_message.php</code>
+        <!-- List Products with Pagination -->
+        <h2 class="mt-5">List Products with Pagination</h2>
+        <p>Retrieve a paginated list of products.</p>
+        <h5>Endpoint:</h5>
+        <p><code>GET /api/products?page={page_no}</code></p>
+        <h5>Parameters:</h5>
+        <p><code>page_no</code> (optional): The page number for pagination. Defaults to 1.</p>
+        <h5>Response:</h5>
+        <pre>
+{
+  "status": "success",
+  "data": [
+    {
+      "product_id": 123,
+      "name": "Product Name",
+      "description": "Product Description",
+      "image": "http://example.com/images/product.jpg",
+      "category": "Category Name"
+    },
+    {
+      "product_id": 456,
+      "name": "Another Product",
+      "description": "Another Product Description",
+      "image": "http://example.com/images/another-product.jpg",
+      "category": "Other Category"
+    },
+    ...
+  ],
+  "pagination": {
+    "total_pages": 3,
+    "current_page": 2,
+    "per_page": 10
+  }
+}
+        </pre>
 
-		<p>The corresponding controller for this page is found at:</p>
-		<code>application/controllers/Welcome.php</code>
+        <!-- Search Products -->
+        <h2 class="mt-5">Search Products</h2>
+        <p>Search products by name or description.</p>
+        <h5>Endpoint:</h5>
+        <p><code>GET /api/products/search?q={search_query}</code></p>
+        <h5>Parameters:</h5>
+        <p><code>q</code> (required): The search query for products.</p>
+        <h5>Response:</h5>
+        <pre>
+{
+  "status": "success",
+  "data": [
+    {
+      "product_id": 123,
+      "name": "Product Name",
+      "description": "Product Description",
+      "image": "http://example.com/images/product.jpg",
+      "category": "Category Name"
+    },
+    {
+      "product_id": 456,
+      "name": "Another Product",
+      "description": "Another Product Description",
+      "image": "http://example.com/images/another-product.jpg",
+      "category": "Other Category"
+    },
+    ...
+  ]
+}
+        </pre>
+    </div>
 
-		<p>If you are exploring CodeIgniter for the very first time, you should start by reading the <a href="userguide3/">User Guide</a>.</p>
-	</div>
-
-	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
-</div>
-
+    <!-- Bootstrap 5 JS and Popper.js (for dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
