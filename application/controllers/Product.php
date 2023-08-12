@@ -40,7 +40,7 @@ class Product extends CI_Controller
 
             $config['upload_path'] = './uploads/';
             $config['allowed_types'] = 'gif|jpg|png';
-            $config['max_size'] = 1024; // 1 MB
+            $config['max_size'] = 10240; // 10 MB
 
             $this->load->library('upload', $config);
 
@@ -183,5 +183,108 @@ class Product extends CI_Controller
 
         $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
+
+
+    public function edit_product() {
+        $product_id = $this->input->post('product_id');
+        $product_name = $this->input->post('name');
+        $product_description = $this->input->post('description');
+        $product_category = $this->input->post('category');
+        $product_button_url = $this->input->post('button_url');
+    
+        if (!$product_id ) {
+            $response = array('status' => 'error', 'message' => 'Product ID are required');
+            $this->output->set_status_header(400);
+        } else {
+            $data = array(
+                'name' => $product_name,
+                'description' => $product_description,
+                'category' => $product_category,
+                'affiliate_url' => $product_button_url
+            );
+            
+            // Handle image upload if needed and update image URL in $data
+            if (!empty($_FILES['image']['name'])) {
+                $config['upload_path'] = './uploads/';
+                $config['allowed_types'] = 'gif|jpg|png';
+                $config['max_size'] = 10240; // 1 MB
+    
+                $this->load->library('upload', $config);
+    
+                if (!$this->upload->do_upload('image')) {
+                    $error = array('status' => 'error', 'message' => $this->upload->display_errors());
+                    $this->output->set_content_type('application/json')->set_output(json_encode($error));
+                    return;
+                } else {
+                    // $data['image'] = $this->upload->data('file_name');
+                    // Handle the ImageKit upload logic here
+                    $data = $this->upload->data();
+                    $imagePath = $data['full_path'];
+                    
+                    $imagekit= new ImageKit
+                    ( "public_PK0IdnZqslL0W8TtdI13tICk6vw=",   
+                    "private_L7CEn8Sr6/79HMWWYGmr4BL3GfI=", 
+                    "https://ik.imagekit.io/k2uegtqj2"
+                    );
+
+                    $uploadData = $imagekit->upload(array(
+                        // 'file' => $imagePath,
+                        'file' => fopen($imagePath, "r"),
+                        'fileName' => $data['file_name'],
+                    ));
+                    
+
+                    $arr= (array) $uploadData->result;
+                
+                    $arr1=(array) $uploadData->responseMetadata;
+                    
+                    if($arr1['statusCode']==200){
+                        unlink($imagePath);
+                        $data['image']=$arr1['raw']->url;
+                    }
+                    else{
+                        $response = array('status' => 'error', 'message' => 'Image upload failed');
+                        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+                        return;
+                    }
+                }
+            }
+            
+            $success = $this->Product_model->edit_product($product_id, $data);
+            
+            if ($success) {
+                $response = array('status' => 'success', 'message' => 'Product updated successfully');
+            } else {
+                $response = array('status' => 'error', 'message' => 'Failed to update product');
+                $this->output->set_status_header(500);
+            }
+        }
+    
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+    
+    public function delete_product() {
+        $product_id = $this->input->post('product_id');
+    
+        if (!$product_id) {
+            $response = array('status' => 'error', 'message' => 'Product ID is required');
+            $this->output->set_status_header(400);
+        } else {
+            $success = $this->Product_model->soft_delete_product($product_id);
+            if ($success) {
+                $response = array('status' => 'success', 'message' => 'Product marked as deleted');
+            } else {
+                $response = array('status' => 'error', 'message' => 'Failed to mark product as deleted');
+                $this->output->set_status_header(500);
+            }
+        }
+    
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+    
 
 }
