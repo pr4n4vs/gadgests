@@ -59,7 +59,7 @@ $route['api/list-all-product'] = 'product/list_all_products';
 $route['api/products'] = 'product/list_products';
 $route['api/products/search'] = 'product/search_products';
 $route['api/edit-product'] = 'product/edit_product';
-
+$route['api/delete-product'] = 'product/delete_product';
 
 $route['api/add-category'] = 'category/add_category';
 $route['api/edit-category'] = 'category/edit_category';
