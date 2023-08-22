@@ -57,7 +57,7 @@ class Product_model extends CI_Model
 
 
     public function soft_delete_product($product_id) {
-        $data = array('status' => 0);
+        $data = array('deleted_at' => date('Y-m-d'));
         $this->db->where('id', $product_id);
         return $this->db->update('products', $data);
     }
