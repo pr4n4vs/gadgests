@@ -287,5 +287,78 @@ class Product extends CI_Controller
             ->set_output(json_encode($response));
     }
     
+    public function list_deleted_products() {
+        $page = $this->input->get('page', TRUE);
+        $page = max(1, intval($page)); // Ensure page number is a positive integer
+    
+        $this->load->library('pagination');
+    
+        $config['total_rows'] = $this->Product_model->count_deleted_products();
+        $config['per_page'] = 10;
+    
+        $this->pagination->initialize($config);
+    
+        $start = ($page - 1) * $config['per_page'];
+    
+        $products = $this->Product_model->get_deleted_products_with_pagination($config['per_page'], $start);
+    
+        if ($products) {
+            $response = array(
+                'status' => 'success',
+                'data' => $products,
+                'pagination' => array(
+                    'total_pages' => ceil($config['total_rows'] / $config['per_page']),
+                    'current_page' => $page,
+                    'per_page' => $config['per_page']
+                )
+            );
+        } else {
+            $response = array('status' => 'error', 'message' => 'No deleted products found');
+        }
+    
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+    
+    public function revoke_deleted_product() {
+        $product_id=$this->input->post('product_id');
+        if(!empty($product_id)){
+            $product = $this->Product_model->get_product($product_id);
+
+            if ($product && $product->deleted_at !== null) {
+                $deleted_at = new DateTime($product->deleted_at);
+                $now = new DateTime();
+                $interval = $deleted_at->diff($now);
+        
+                if ($interval->days < 30) {
+                    $result = $this->Product_model->revoke_deleted_product($product_id);
+        
+                    if ($result) {
+                        $response = array('status' => 'success', 'message' => 'Product revoked successfully');
+                    } else {
+                        $response = array('status' => 'error', 'message' => 'Failed to revoke product');
+                        $this->output->set_status_header(500);
+                    }
+                } else {
+                    $response = array('status' => 'error', 'message' => 'Product cannot be revoked after 30 days');
+                    $this->output->set_status_header(400);
+                }
+            } else {
+                $response = array('status' => 'error', 'message' => 'Product not found');
+                $this->output->set_status_header(404);
+            }
+        }
+        else {
+            $response = array('status' => 'error', 'message' => 'Please enter product to delete');
+            $this->output->set_status_header(400);
+        }
+        
+    
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+    
 
 }

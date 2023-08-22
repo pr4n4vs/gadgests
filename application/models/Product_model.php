@@ -61,5 +61,49 @@ class Product_model extends CI_Model
         $this->db->where('id', $product_id);
         return $this->db->update('products', $data);
     }
+
+    public function count_deleted_products() {
+        $this->db->where('deleted_at IS NOT NULL');
+        return $this->db->count_all_results('products');
+    }
     
+    public function get_deleted_products_with_pagination($per_page, $start) {
+        $this->db->select('*');
+        $this->db->from('products');
+        $this->db->where('deleted_at IS NOT NULL');
+        $this->db->limit($per_page, $start);
+        $query = $this->db->get();
+        $products = $query->result();
+
+        // Calculate days left for automatic deletion
+        foreach ($products as &$product) {
+            $deleted_at = new DateTime($product->deleted_at);
+            $now = new DateTime();
+            $interval = $deleted_at->diff($now);
+            $days_left = 30 - $interval->days;
+            $product->days_left = max(0, $days_left);
+        }
+
+        return $products;
+
+        
+    }
+
+    public function revoke_deleted_product($product_id) {
+        $this->db->where('id', $product_id);
+        $this->db->update('products', array('deleted_at' => NULL));
+        return $this->db->affected_rows() > 0;
+    }
+    
+    
+    public function delete_old_products($threshold) {
+        $this->db->where('deleted_at IS NOT NULL');
+        $this->db->where('deleted_at <=', $threshold);
+        $this->db->delete('products');
+    }
+    
+    public function get_product($product_id) {
+        $query = $this->db->get_where('products', array('id' => $product_id));
+        return $query->row();
+    }
 }
