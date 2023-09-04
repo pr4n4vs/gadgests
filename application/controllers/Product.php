@@ -23,6 +23,7 @@ class Product extends CI_Controller
             'name' => $this->input->post('name'),
             'description' => $this->input->post('description'),
             'affiliate_url' => $this->input->post('affiliate_url')??'',
+            'category' => $this->input->post('category')??0,
             'created_at' => date('Y-m-d H:i:s'),
         );
 
@@ -190,7 +191,7 @@ class Product extends CI_Controller
         $product_id = $this->input->post('product_id');
         $product_name = $this->input->post('name');
         $product_description = $this->input->post('description');
-        $product_category = $this->input->post('category');
+        $product_category = $this->input->post('category')??0;
         $product_button_url = $this->input->post('affiliate_url');
     
         if (!$product_id ) {
